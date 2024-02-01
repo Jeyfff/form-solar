@@ -73,7 +73,7 @@ Concessionária:
                     const pdfNumber = anoAtual === storedYear ? pdfCount + 1 : 1;
             
                     // Carregue o PDF inicial
-                    const pdfBytes = await fetch('/modelo.pdf').then(res => res.arrayBuffer());
+                    const pdfBytes = await fetch('./modelo.pdf').then(res => res.arrayBuffer());
                     const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
             
                     // Adicione texto às páginas do PDF
