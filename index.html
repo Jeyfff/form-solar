@@ -93,7 +93,13 @@ Concessionária:
                     // Atualize o número do PDF antes de salvar
                     localStorage.setItem(dataFormatada + '_pdfCount', pdfNumber);
                     localStorage.setItem('storedYear', anoAtual);
-            
+
+                    // Solicite a senha
+                    const senhaInserida = window.prompt('Digite a senha para baixar o PDF:');
+                        if (senhaInserida !== 'hermansol') {
+                            alert('Senha incorreta. O PDF não pode ser baixado.');
+                        return;
+                    }
                     // Salve o PDF modificado
                     console.log('Salvando o PDF modificado:', pdfNumber);
                     const modifiedPdfBytes = await pdfDoc.save();
