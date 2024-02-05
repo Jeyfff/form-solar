@@ -18,7 +18,10 @@ h1 {
     margin-top: 20px;
     color: #ffffff;
 }
-
+h3 {
+    font-size: 3;
+    color: gray;
+}
 .container {
     display: flex;
     flex-direction: column;
