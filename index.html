@@ -2,10 +2,9 @@
 <html lang="pt-br">
 
 <head>
-    <script src="https://unpkg.com/pdf-lib@1.16.0/dist/pdf-lib.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.2">
-    <link rel="icon" type="image/png" href="https://github.com/Jeyfff/form-solar/blob/main/Solar.png?raw=true">
+    <link rel="icon" type="image/png" href="/Solar.png">
     <title>Formulário de Orçamento - Solar Continental</title>
     <link rel="stylesheet" href="static/style.css">
 </head>
@@ -15,124 +14,191 @@
     <div class="container">
         <h1>Formulário de Orçamento</h1>
 
-        <form id="formularioOrcamento">
-            <style>
-                .form-box textarea::placeholder {
-                    color: #999;  /* Cor mais clara para o texto esmaecido */
-                }
-            </style>
-            
-            <div class="form-box" id="divInformacoesCliente">
-                <h2>INFORMAÇÕES DO CLIENTE</h2>
-                <!-- Adicionando as informações dentro da caixa de texto -->
-                <textarea name="informacoesCliente" id="informacoesCliente" rows="10" cols="120" style="max-height: 200px; resize: none;">
-Cliente:
-N° Proposta:
-Endereço:
-Concessionária:
-                </textarea>
-            </div>
-            
-            <div class="form-box" id="divProducaoProjetada">
-                <h2>PRODUÇÃO DE ENERGIA PROJETADA</h2>
-                <textarea name="producaoprojetada" id="producaoprojetada" rows="10" cols="120" style="max-height: 200px; resize: none;" placeholder="Este campo deve possuir, no máximo, 11 linhas."></textarea>
-            </div>
-            
-            <div class="form-box" id="divSistemaIndicado">
-                <h2>SISTEMA INDICADO</h2>
-                <textarea name="sistemaIndicado" id="sistemaIndicado" rows="10" cols="120" style="max-height: 200px; resize: none;" placeholder="Este campo deve possuir, no máximo, 14 linhas."></textarea>
-            </div>
-            
-            <div class="form-box" id="divCondicoesComerciais">
-                <h2>CONDIÇÕES COMERCIAIS</h2>
-                <textarea name="condicoesComerciais" id="condicoesComerciais" rows="10" cols="120" style="max-height: 200px; resize: none;" placeholder="Este campo deve possuir, no máximo, 15 linhas."></textarea>
-            </div>
-            
-            <div class="form-box" id="divSimulacaoFinanciamento">
-                <h2>SIMULAÇÃO DO FINANCIAMENTO</h2>
-                <textarea name="simulacaoFinanciamento" id="simulacaoFinanciamento" rows="10" cols="120" style="max-height: 200px; resize: none;" placeholder="Este campo deve possuir, no máximo, 9 linhas."></textarea>
-            </div>
-            <button class="button" type="button" onclick="gerarPDF()">Gerar Orçamento</button>
+        <style>
+            h2 {
+                margin-bottom: 5px; /* Ajuste o valor conforme necessário */
+            }
 
-            <script>
-                async function gerarPDF() {
-                    const dataAtual = new Date();
-                    const anoAtual = dataAtual.getFullYear();
-                    const dataFormatada = `${anoAtual}-${String(dataAtual.getMonth() + 1).padStart(2, '0')}-${String(dataAtual.getDate()).padStart(2, '0')}`;
-            
-                    // Adicione seu código para obter valores do formulário
-                    const informacoesClienteValue = document.getElementById('informacoesCliente').value;
-                    const producaoProjetadaValue = document.getElementById('producaoprojetada').value;
-                    const sistemaIndicadoValue = document.getElementById('sistemaIndicado').value;
-                    const condicoesComerciaisValue = document.getElementById('condicoesComerciais').value;
-                    const simulacaoFinanciamentoValue = document.getElementById('simulacaoFinanciamento').value;
-            
-                    // Obtenha o número do PDF antes de incrementar
-                    const storedYear = parseInt(localStorage.getItem('storedYear')) || anoAtual;
-                    let pdfCount = parseInt(localStorage.getItem(dataFormatada + '_pdfCount')) || 0;
-                    const pdfNumber = anoAtual === storedYear ? pdfCount + 1 : 1;
-            
-                    // Carregue o PDF inicial
-                    const pdfBytes = await fetch('./modelo.pdf').then(res => res.arrayBuffer());
-                    const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
-            
-                    // Adicione texto às páginas do PDF
-                    const pages = pdfDoc.getPages();
-                    const fileNameFormat = `${dataFormatada}${String(pdfNumber).padStart(3, '0')}`;
-                    const textToBeAdded = `${fileNameFormat}`;
-            
-                    // Adiciona o texto sem substituir o conteúdo existente nas coordenadas específicas
-                    await addTextToPage(pages[0], textToBeAdded, 125, pages[0].getHeight() - 574, 12, false);
-                    await addTextToPage(pages[0], informacoesClienteValue, 50, pages[0].getHeight() - 550, 12, false);
-                    await addTextToPage(pages[1], producaoProjetadaValue, 50, pages[1].getHeight() - 150, 12, false);
-                    await addTextToPage(pages[1], sistemaIndicadoValue, 50, pages[1].getHeight() - 450, 12, false);
-                    await addTextToPage(pages[2], condicoesComerciaisValue, 50, pages[2].getHeight() - 150, 12, false);
-                    await addTextToPage(pages[2], simulacaoFinanciamentoValue, 50, pages[2].getHeight() - 545, 12, false);
-                    await addTextToPage(pages[2], 'O Valor da simulação é apenas um valor de referência. O crédito está sujeito a alteração no momento da contratação.', 50, pages[2].getHeight() - 770, 10, false);
-            
-                    // Atualize o número do PDF antes de salvar
-                    localStorage.setItem(dataFormatada + '_pdfCount', pdfNumber);
-                    localStorage.setItem('storedYear', anoAtual);
+            h3 {
+                margin-top: 5px;
+                margin-bottom: 5px; /* Ajuste o valor conforme necessário */
+            }
 
-                    // Solicite a senha
-                    const senhaInserida = window.prompt('Digite a senha para baixar o PDF:');
-                        if (senhaInserida !== 'hermansol') {
-                            alert('Senha incorreta. O PDF não pode ser baixado.');
-                        return;
-                    }
-                    // Salve o PDF modificado
-                    console.log('Salvando o PDF modificado:', pdfNumber);
-                    const modifiedPdfBytes = await pdfDoc.save();
-            
-                    // Crie um link de download
-                    const blob = new Blob([modifiedPdfBytes], { type: 'application/pdf' });
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = generateFileName(dataFormatada, pdfNumber);
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }
-            
-                async function addTextToPage(page, text, x, y, size = 12, esmaecido = false) {
-                    const textColor = esmaecido ? PDFLib.rgb(0.7, 0.7, 0.7) : PDFLib.rgb(0, 0, 0);
-                    await page.drawText(text, {
-                        size,
-                        x,
-                        y,
-                        color: textColor,
-                    });
-                }
-            
-                function generateFileName(dataFormatada, pdfNumber) {
-                    console.log('dataFormatada:', dataFormatada);
-                    console.log('pdfNumber:', pdfNumber);
-                    return `${dataFormatada}_${String(pdfNumber).padStart(3, '0')}_Orçamento.pdf`;
-                }
-            </script>
-            
-        
+            .form-box {
+                margin-top: 8px; /* Ajuste o valor conforme necessário */
+            }
+        </style>
+
+        <div class="form-box" id="divInformacoesCliente">
+            <h2>INFORMAÇÕES DO CLIENTE</h2>
+            <textarea name="informacoesCliente" id="informacoesCliente" rows="10" cols="120" style="max-height: 200px; resize: none;">
+Cliente: 
+N° Proposta: 
+Endereço: 
+Concessionária: Cosern
+            </textarea>
+        </div>
+
+        <div class="form-box" id="divProducaoProjetada">
+            <h2>PRODUÇÃO DE ENERGIA PROJETADA</h2>
+            <h3>Este campo deve possuir, no máximo, 11 linhas.</h3>
+            <textarea name="producaoprojetada" id="producaoprojetada" rows="10" cols="120" style="max-height: 200px; resize: none;">
+Faixa de produção estimada:  Wh
+            </textarea>
+        </div>
+
+        <div class="form-box" id="divSistemaIndicado">
+            <h2>SISTEMA INDICADO</h2>
+            <h3>Este campo deve possuir, no máximo, 14 linhas.</h3>
+            <textarea name="sistemaIndicado" id="sistemaIndicado" rows="10" cols="120" style="max-height: 200px; resize: none;">
+Placas: 
+Inversor: 
+Área necessária: 
+            </textarea>
+        </div>
+
+        <div class="form-box" id="divPotenciatotal">
+            <h2>POTÊNCIA TOTAL</h2>
+            <h3>Este campo deve possuir, no máximo, 1 linha.</h3>
+            <textarea name="potenciatotal" id="potenciaTotal" rows="10" cols="120" style="max-height: 200px; resize: none;">
+ kWp. 
+            </textarea>
+        </div>
+
+        <div class="form-box" id="divCondicoesComerciais">
+            <h2>CONDIÇÕES COMERCIAIS</h2>
+            <h3>Este campo deve possuir, no máximo, 15 linhas.</h3>
+            <textarea name="condicoesComerciais" id="condicoesComerciais" rows="10" cols="120" style="max-height: 200px; resize: none;">
+                Proposta Comercial: R$ 
+                À Vista : R$ 
+                
+Obs 1: Proposta válida enquanto durar o estoque ou até 
+Obs 2: O valor não engloba possíveis melhorias no telhado do cliente, caso a
+equipe técnica solicite o aumento do reforço de sustentação do telhado para a
+instalação das placas solares.
+Obs3: O valor pode ser parcelado no cartão em até 12x com juros.
+Obs4: Pode negociar o valor com uma entrada e parcelar o restante no cartão em
+até 12x com juros. 
+            </textarea>
+        </div>
+
+        <div class="form-box" id="divSimulacaoFinanciamento">
+            <h2>SIMULAÇÃO DO FINANCIAMENTO</h2>
+            <h3>Este campo deve possuir, no máximo, 9 linhas.</h3>
+            <textarea name="simulacaoFinanciamento" id="simulacaoFinanciamento" rows="10" cols="120" style="max-height: 200px; resize: none;">
+                24 x R$ 
+                36 x R$ 
+                48 x R$ 
+                60 x R$ 
+                72 x R$ 
+            </textarea>
+        </div>
+
+        <button class="button" type="button" onclick="gerarPDF()">Gerar Orçamento</button>
     </div>
+
+    <script src="https://unpkg.com/pdf-lib"></script>
+    <script>
+        // Seu código aqui...
+        async function gerarPDF() {
+            const dataAtual = new Date();
+            const anoAtual = dataAtual.getFullYear();
+            const dataFormatada = `${anoAtual}-${String(dataAtual.getMonth() + 1).padStart(2, '0')}-${String(dataAtual.getDate()).padStart(2, '0')}`;
+            
+            const informacoesClienteValue = document.getElementById('informacoesCliente').value;
+            const producaoProjetadaValue = document.getElementById('producaoprojetada').value;
+            const sistemaIndicadoValue = document.getElementById('sistemaIndicado').value;
+            const potencialTotalValue = document.getElementById('potenciaTotal').value;
+            const condicoesComerciaisValue = document.getElementById('condicoesComerciais').value;
+            const simulacaoFinanciamentoValue = document.getElementById('simulacaoFinanciamento').value;
+
+            const storedYear = parseInt(localStorage.getItem('storedYear')) || anoAtual;
+            let pdfCount = parseInt(localStorage.getItem(dataFormatada + '_pdfCount')) || 0;
+            const pdfNumber = anoAtual === storedYear ? pdfCount + 1 : 1;
+
+            const pdfBytes = await fetch('/modelo.pdf').then(res => res.arrayBuffer());
+            const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
+
+            function addTextToPage(page, text, x, y, size = 12) {
+                const textColor = PDFLib.rgb(0, 0, 0);
+                const options = {
+                    size,
+                    x,
+                    y,
+                    color: textColor,
+                };
+                page.drawText(text, options);
+            }
+
+            const pages = pdfDoc.getPages();
+            const fileNameFormat = `${dataFormatada}${String(pdfNumber).padStart(3, '0')}`;
+            const textToBeAdded = `${fileNameFormat}`;
+
+            addTextToPage(pages[0], textToBeAdded, 125, pages[0].getHeight() - 614, 12, false);
+            addTextToPage(pages[0], informacoesClienteValue, 50, pages[0].getHeight() - 590, 12, false);
+            addTextToPage(pages[1], producaoProjetadaValue, 50, pages[1].getHeight() - 150, 12, false);
+            addTextToPage(pages[1], sistemaIndicadoValue, 50, pages[1].getHeight() - 335, 12, false);
+            addTextToPage(pages[1], potencialTotalValue, 345, pages[1].getHeight() - 554, 14);
+            addTextToPage(pages[2], condicoesComerciaisValue, 50, pages[2].getHeight() - 150, 12, false);
+            addTextToPage(pages[2], simulacaoFinanciamentoValue, 190, pages[2].getHeight() - 527, 12, false);
+            addTextToPage(pages[2], 'Opções de parcelamento:', 80, pages[2].getHeight() - 575, 12, false);
+
+            const senhaInserida = await solicitarSenha();
+            if (senhaInserida !== '1234') {
+                alert('Senha incorreta. O PDF não pode ser baixado.');
+                return;
+            }
+
+            localStorage.setItem(dataFormatada + '_pdfCount', pdfNumber);
+            localStorage.setItem('storedYear', anoAtual);
+
+            console.log('Salvando o PDF modificado:', pdfNumber);
+            const modifiedPdfBytes = await pdfDoc.save();
+
+            const blob = new Blob([modifiedPdfBytes], { type: 'application/pdf' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = generateFileName(dataFormatada, pdfNumber);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function solicitarSenha() {
+            return new Promise((resolve) => {
+                const senhaInput = document.createElement('input');
+                senhaInput.type = 'password';
+
+                const confirmarBotao = document.createElement('button');
+                confirmarBotao.textContent = 'Confirmar';
+
+                const cancelarBotao = document.createElement('button');
+                cancelarBotao.textContent = 'Cancelar';
+
+                const divSenha = document.createElement('div');
+                divSenha.appendChild(senhaInput);
+                divSenha.appendChild(confirmarBotao);
+                divSenha.appendChild(cancelarBotao);
+
+                document.body.appendChild(divSenha);
+
+                confirmarBotao.addEventListener('click', () => {
+                    const senhaInserida = senhaInput.value;
+                    divSenha.remove();
+                    resolve(senhaInserida);
+                });
+
+                cancelarBotao.addEventListener('click', () => {
+                    divSenha.remove();
+                    resolve('');
+                });
+            });
+        }
+
+        function generateFileName(dataFormatada, pdfNumber) {
+            return `${dataFormatada}_${String(pdfNumber).padStart(3, '0')}_Orçamento.pdf`;
+        }
+    </script>
 </body>
 
 </html>
