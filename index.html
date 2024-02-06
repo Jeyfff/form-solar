@@ -31,6 +31,7 @@
 
         <div class="form-box" id="divInformacoesCliente">
             <h2>INFORMAÇÕES DO CLIENTE</h2>
+            <h3>O "Nº proposta" já recebe um valor gerado pelo sistema.</h3>
             <textarea name="informacoesCliente" id="informacoesCliente" rows="10" cols="120" style="max-height: 200px; resize: none;">
 Cliente: 
 N° Proposta: 
@@ -138,16 +139,10 @@ até 12x com juros.
             addTextToPage(pages[0], informacoesClienteValue, 50, pages[0].getHeight() - 590, 12, false);
             addTextToPage(pages[1], producaoProjetadaValue, 50, pages[1].getHeight() - 150, 12, false);
             addTextToPage(pages[1], sistemaIndicadoValue, 50, pages[1].getHeight() - 335, 12, false);
-            addTextToPage(pages[1], potencialTotalValue, 345, pages[1].getHeight() - 554, 14);
+            addTextToPage(pages[1], potencialTotalValue, 320, pages[1].getHeight() - 554, 14);
             addTextToPage(pages[2], condicoesComerciaisValue, 50, pages[2].getHeight() - 150, 12, false);
             addTextToPage(pages[2], simulacaoFinanciamentoValue, 190, pages[2].getHeight() - 527, 12, false);
             addTextToPage(pages[2], 'Opções de parcelamento:', 80, pages[2].getHeight() - 575, 12, false);
-
-            const senhaInserida = await solicitarSenha();
-            if (senhaInserida !== '1234') {
-                alert('Senha incorreta. O PDF não pode ser baixado.');
-                return;
-            }
 
             localStorage.setItem(dataFormatada + '_pdfCount', pdfNumber);
             localStorage.setItem('storedYear', anoAtual);
@@ -164,36 +159,6 @@ até 12x com juros.
             document.body.removeChild(link);
         }
 
-        function solicitarSenha() {
-            return new Promise((resolve) => {
-                const senhaInput = document.createElement('input');
-                senhaInput.type = 'password';
-
-                const confirmarBotao = document.createElement('button');
-                confirmarBotao.textContent = 'Confirmar';
-
-                const cancelarBotao = document.createElement('button');
-                cancelarBotao.textContent = 'Cancelar';
-
-                const divSenha = document.createElement('div');
-                divSenha.appendChild(senhaInput);
-                divSenha.appendChild(confirmarBotao);
-                divSenha.appendChild(cancelarBotao);
-
-                document.body.appendChild(divSenha);
-
-                confirmarBotao.addEventListener('click', () => {
-                    const senhaInserida = senhaInput.value;
-                    divSenha.remove();
-                    resolve(senhaInserida);
-                });
-
-                cancelarBotao.addEventListener('click', () => {
-                    divSenha.remove();
-                    resolve('');
-                });
-            });
-        }
 
         function generateFileName(dataFormatada, pdfNumber) {
             return `${dataFormatada}_${String(pdfNumber).padStart(3, '0')}_Orçamento.pdf`;
