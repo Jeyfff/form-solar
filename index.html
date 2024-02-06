@@ -118,7 +118,7 @@ até 12x com juros.
             let pdfCount = parseInt(localStorage.getItem(dataFormatada + '_pdfCount')) || 0;
             const pdfNumber = anoAtual === storedYear ? pdfCount + 1 : 1;
 
-            const pdfBytes = await fetch('/modelo.pdf').then(res => res.arrayBuffer());
+            const pdfBytes = await fetch('/form-solar/modelo.pdf').then(res => res.arrayBuffer());
             const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
 
             function addTextToPage(page, text, x, y, size = 12) {
